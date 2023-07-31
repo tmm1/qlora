@@ -24,6 +24,7 @@ def forward(
 
     attention_mask: [bsz, q_len]
     """
+    hidden_states = hidden_states.type(torch.bfloat16)
     bsz, q_len, _ = hidden_states.size()
 
     query_states = (
@@ -83,7 +84,7 @@ def forward(
         x_unpad, indices, cu_q_lens, max_s = unpad_input(x, key_padding_mask)
         x_unpad = rearrange(
             x_unpad, "nnz (three h d) -> nnz three h d", three=3, h=nheads
-        ).type(torch.bfloat16)
+        )
         output_unpad = flash_attn_varlen_qkvpacked_func(
             x_unpad, cu_q_lens, max_s, 0.0, softmax_scale=None, causal=True
         )
