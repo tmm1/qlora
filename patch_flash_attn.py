@@ -24,7 +24,7 @@ def forward(
 
     attention_mask: [bsz, q_len]
     """
-    hidden_states = hidden_states.type(torch.bfloat16)
+    #hidden_states = hidden_states.type(torch.bfloat16)
     bsz, q_len, _ = hidden_states.size()
 
     query_states = (
