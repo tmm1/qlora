@@ -402,8 +402,11 @@ def get_accelerate_model(args, checkpoint_dir):
         if isinstance(module, LoraLayer):
             if args.bf16:
                 module = module.to(torch.bfloat16)
-        if 'norm' in name and not args.use_flash_attn:
-            module = module.to(torch.float32)
+        if 'norm' in name:
+            if args.use_flash_attn:
+                module = module.to(torch.bfloat16)
+            else:
+                module = module.to(torch.float32)
         if 'lm_head' in name or 'embed_tokens' in name:
             if hasattr(module, 'weight'):
                 if args.bf16 and module.weight.dtype == torch.float32:
