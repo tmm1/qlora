@@ -397,15 +397,12 @@ def get_accelerate_model(args, checkpoint_dir):
                 task_type="CAUSAL_LM",
             )
             model = get_peft_model(model, config)
-            if args.use_flash_attn:
-                # convert rmsnorm and attn layers back from float32 to bf16
-                model.to(compute_dtype)
 
     for name, module in model.named_modules():
         if isinstance(module, LoraLayer):
             if args.bf16:
                 module = module.to(torch.bfloat16)
-        if 'norm' in name:
+        if 'norm' in name and not args.use_flash_attn:
             module = module.to(torch.float32)
         if 'lm_head' in name or 'embed_tokens' in name:
             if hasattr(module, 'weight'):
