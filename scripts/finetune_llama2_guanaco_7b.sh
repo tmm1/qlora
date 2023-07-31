@@ -30,8 +30,8 @@ python qlora.py \
     --lr_scheduler_type constant \
     --gradient_checkpointing \
     --dataset oasst1 \
-    --source_max_len 16 \
-    --target_max_len 512 \
+    --source_max_len 2048 \
+    --target_max_len 2048 \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 16 \
     --max_steps 1875 \
