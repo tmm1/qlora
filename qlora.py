@@ -365,8 +365,6 @@ def get_accelerate_model(args, checkpoint_dir):
             model=model,
         )
     if 'llama' in args.model_name_or_path or isinstance(tokenizer, LlamaTokenizer):
-        if args.use_flash_attn:
-            model.to(compute_dtype)
         # LLaMA tokenizer may not have correct special tokens set.
         # Check and add them if missing to prevent them from being parsed into different tokens.
         # Note that these are present in the vocabulary.
@@ -399,6 +397,9 @@ def get_accelerate_model(args, checkpoint_dir):
                 task_type="CAUSAL_LM",
             )
             model = get_peft_model(model, config)
+            if args.use_flash_attn:
+                # convert rmsnorm and attn layers back from float32 to bf16
+                model.to(compute_dtype)
 
     for name, module in model.named_modules():
         if isinstance(module, LoraLayer):
